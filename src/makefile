@@ -1,5 +1,5 @@
 # Nome do executável
-EXEC = zorc
+EXEC = tp2
 
 # Compilador
 CC = gcc
@@ -33,3 +33,7 @@ clean:
 # Limpa tudo inclusive a saída
 clean-all: clean
 	rm -f saida.txt
+
+# Instala o executável no diretório raiz
+install: $(EXEC)
+	cp $(EXEC) ..
