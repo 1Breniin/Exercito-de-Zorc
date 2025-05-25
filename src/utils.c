@@ -107,17 +107,13 @@ void escrever_saida(const char* nome_arquivo, Instancias* instancias) {
     for (int i = 0; i < instancias->total_instancias; i++) {
         Grafo* g = instancias->instancias[i];
 
-        ResultadoRecrutamento* res_dyn = solucao_dinamica(g);
-        ResultadoRecrutamento* res_heur = solucao_heuristica(g);
-
-        fprintf(out, "[Dinamica] ");
-        imprimir_resultado(res_dyn, out);
-
-        fprintf(out, "[Heuristica] ");
-        imprimir_resultado(res_heur, out);
-
-        liberar_resultado(res_dyn);
-        liberar_resultado(res_heur);
+        ResultadoRecrutamento* res = solucao_dinamica(g);
+        if (res != NULL) {
+            imprimir_resultado(res, out);
+            liberar_resultado(res);
+        } else {
+            fprintf(out, "0\n");
+        }
     }
 
     fclose(out);

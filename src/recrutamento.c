@@ -43,7 +43,19 @@ typedef struct {
 EstadoDP* calcular_melhor_estado(Grafo* grafo, int atual, int peso_usado, int distancia_usada, 
                                 int* visitado, EstadoDP** memo) {
     if (memo[atual] != NULL) {
-        return memo[atual];
+        EstadoDP* estado = (EstadoDP*)malloc(sizeof(EstadoDP));
+        estado->caminho = (int*)malloc(sizeof(int) * MAX_CAMINHO);
+        estado->soldados_por_povo = (int*)calloc(grafo->quantidade_povos, sizeof(int));
+        
+        // Copia os dados do estado memoizado
+        memcpy(estado->caminho, memo[atual]->caminho, sizeof(int) * memo[atual]->tamanho_caminho);
+        memcpy(estado->soldados_por_povo, memo[atual]->soldados_por_povo, sizeof(int) * grafo->quantidade_povos);
+        estado->tamanho_caminho = memo[atual]->tamanho_caminho;
+        estado->habilidade = memo[atual]->habilidade;
+        estado->peso_usado = memo[atual]->peso_usado;
+        estado->distancia_usada = memo[atual]->distancia_usada;
+        
+        return estado;
     }
 
     EstadoDP* estado = (EstadoDP*)malloc(sizeof(EstadoDP));
@@ -79,8 +91,17 @@ EstadoDP* calcular_melhor_estado(Grafo* grafo, int atual, int peso_usado, int di
                                                         visitado, memo);
 
             if (estado_viz != NULL && estado_viz->habilidade > melhor_habilidade) {
-                melhor_habilidade = estado_viz->habilidade;
+                if (melhor_estado != NULL) {
+                    free(melhor_estado->caminho);
+                    free(melhor_estado->soldados_por_povo);
+                    free(melhor_estado);
+                }
                 melhor_estado = estado_viz;
+                melhor_habilidade = estado_viz->habilidade;
+            } else if (estado_viz != NULL) {
+                free(estado_viz->caminho);
+                free(estado_viz->soldados_por_povo);
+                free(estado_viz);
             }
         }
     }
@@ -94,9 +115,25 @@ EstadoDP* calcular_melhor_estado(Grafo* grafo, int atual, int peso_usado, int di
             estado->soldados_por_povo[melhor_estado->caminho[i]] = 
                 melhor_estado->soldados_por_povo[melhor_estado->caminho[i]];
         }
+        
+        free(melhor_estado->caminho);
+        free(melhor_estado->soldados_por_povo);
+        free(melhor_estado);
     }
 
-    memo[atual] = estado;
+    // Cria uma cópia do estado para a memoização
+    EstadoDP* estado_memo = (EstadoDP*)malloc(sizeof(EstadoDP));
+    estado_memo->caminho = (int*)malloc(sizeof(int) * estado->tamanho_caminho);
+    estado_memo->soldados_por_povo = (int*)malloc(sizeof(int) * grafo->quantidade_povos);
+    
+    memcpy(estado_memo->caminho, estado->caminho, sizeof(int) * estado->tamanho_caminho);
+    memcpy(estado_memo->soldados_por_povo, estado->soldados_por_povo, sizeof(int) * grafo->quantidade_povos);
+    estado_memo->tamanho_caminho = estado->tamanho_caminho;
+    estado_memo->habilidade = estado->habilidade;
+    estado_memo->peso_usado = estado->peso_usado;
+    estado_memo->distancia_usada = estado->distancia_usada;
+
+    memo[atual] = estado_memo;
     visitado[atual] = 0;
 
     return estado;
@@ -113,26 +150,61 @@ EstadoDP* calcular_melhor_estado(Grafo* grafo, int atual, int peso_usado, int di
  * @return ResultadoRecrutamento* Resultado do recrutamento com o caminho e soldados
  */
 ResultadoRecrutamento* solucao_dinamica(Grafo* grafo) {
-    EstadoDP** memo = (EstadoDP**)calloc(grafo->quantidade_povos, sizeof(EstadoDP*));
-    int* visitado = (int*)calloc(grafo->quantidade_povos, sizeof(int));
+    EstadoDP* melhor_estado = NULL;
+    int melhor_habilidade = -1;
 
-    EstadoDP* melhor_estado = calcular_melhor_estado(grafo, 0, 0, 0, visitado, memo);
+    // Tenta cada povo como ponto de partida
+    for (int inicio = 0; inicio < grafo->quantidade_povos; inicio++) {
+        // Aloca nova memoização e array de visitados para cada tentativa
+        EstadoDP** memo = (EstadoDP**)calloc(grafo->quantidade_povos, sizeof(EstadoDP*));
+        int* visitado = (int*)calloc(grafo->quantidade_povos, sizeof(int));
 
+        EstadoDP* estado = calcular_melhor_estado(grafo, inicio, 0, 0, visitado, memo);
+        
+        if (estado != NULL && estado->habilidade > melhor_habilidade) {
+            if (melhor_estado != NULL) {
+                free(melhor_estado->caminho);
+                free(melhor_estado->soldados_por_povo);
+                free(melhor_estado);
+            }
+            melhor_estado = estado;
+            melhor_habilidade = estado->habilidade;
+        } else if (estado != NULL) {
+            free(estado->caminho);
+            free(estado->soldados_por_povo);
+            free(estado);
+        }
+
+        // Libera a memoização e o array de visitados
+        for (int i = 0; i < grafo->quantidade_povos; i++) {
+            if (memo[i] != NULL && memo[i] != melhor_estado) {
+                free(memo[i]->caminho);
+                free(memo[i]->soldados_por_povo);
+                free(memo[i]);
+            }
+        }
+        free(memo);
+        free(visitado);
+    }
+
+    if (melhor_estado == NULL) {
+        return NULL;
+    }
+
+    // Cria uma cópia dos dados do melhor estado
     ResultadoRecrutamento* res = (ResultadoRecrutamento*)malloc(sizeof(ResultadoRecrutamento));
-    res->caminho = melhor_estado->caminho;
-    res->soldados_por_povo = melhor_estado->soldados_por_povo;
+    res->caminho = (int*)malloc(sizeof(int) * melhor_estado->tamanho_caminho);
+    res->soldados_por_povo = (int*)malloc(sizeof(int) * grafo->quantidade_povos);
+    
+    // Copia os dados
+    memcpy(res->caminho, melhor_estado->caminho, sizeof(int) * melhor_estado->tamanho_caminho);
+    memcpy(res->soldados_por_povo, melhor_estado->soldados_por_povo, sizeof(int) * grafo->quantidade_povos);
     res->tamanho_caminho = melhor_estado->tamanho_caminho;
     res->habilidade_total = melhor_estado->habilidade;
 
-    for (int i = 0; i < grafo->quantidade_povos; i++) {
-        if (memo[i] != NULL && memo[i] != melhor_estado) {
-            free(memo[i]->caminho);
-            free(memo[i]->soldados_por_povo);
-            free(memo[i]);
-        }
-    }
-    free(memo);
-    free(visitado);
+    // Libera o melhor estado
+    free(melhor_estado->caminho);
+    free(melhor_estado->soldados_por_povo);
     free(melhor_estado);
 
     return res;
@@ -209,10 +281,15 @@ ResultadoRecrutamento* solucao_heuristica(Grafo* grafo) {
  * @param out Arquivo onde o resultado será impresso
  */
 void imprimir_resultado(ResultadoRecrutamento* resultado, FILE* out) {
+    // Imprime a habilidade total
     fprintf(out, "%d", resultado->habilidade_total);
+    
+    // Imprime cada povo visitado e sua quantidade de soldados
     for (int i = 0; i < resultado->tamanho_caminho; i++) {
         int p = resultado->caminho[i];
-        fprintf(out, " %d %d", p + 1, resultado->soldados_por_povo[p]);
+        if (resultado->soldados_por_povo[p] > 0 || i == 0) {  // Imprime se tiver soldados ou for o primeiro povo
+            fprintf(out, " %d %d", p + 1, resultado->soldados_por_povo[p]);
+        }
     }
     fprintf(out, "\n");
 }
