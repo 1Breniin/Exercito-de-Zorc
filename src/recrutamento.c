@@ -287,9 +287,8 @@ void imprimir_resultado(ResultadoRecrutamento* resultado, FILE* out) {
     // Imprime cada povo visitado e sua quantidade de soldados
     for (int i = 0; i < resultado->tamanho_caminho; i++) {
         int p = resultado->caminho[i];
-        if (resultado->soldados_por_povo[p] > 0 || i == 0) {  // Imprime se tiver soldados ou for o primeiro povo
-            fprintf(out, " %d %d", p + 1, resultado->soldados_por_povo[p]);
-        }
+        // Imprime o povo e a quantidade de soldados (mesmo que seja 0)
+        fprintf(out, " %d %d", p + 1, resultado->soldados_por_povo[p]);
     }
     fprintf(out, "\n");
 }
