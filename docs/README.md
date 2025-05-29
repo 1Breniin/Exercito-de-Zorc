@@ -94,18 +94,27 @@ Onde:
 4 5 4  
 
 ## Formato de Saída
-O arquivo de saída (`saida.txt`) conterá:
+O arquivo de saída (`saida.txt`) deve conter uma linha para cada instância da entrada.
+
+Cada linha terá o seguinte formato:
 ```
-N
-p1 p2 ... pN
-s1 s2 ... sN
 H
+p1 p2 ... pN
+s1 s2 ... sN  
 ```
 Onde:
-- N: número de povos visitados
-- pi: sequência de povos visitados
-- si: quantidade de soldados recrutados em cada povo
-- H: soma total das habilidades dos soldados recrutados
+- `H`: habilidade total dos soldados recrutados.
+- `pi`: identificador do povo visitado na ordem em que foi percorrido.
+- `si`: quantidade de soldados recrutados no povo `pi`.
+
+### Observações:
+- Pode haver mais de um caminho com habilidade total máxima. Qualquer um deles é aceito.
+- É permitido visitar povos sem recrutar soldados (`si = 0`).
+
+### Exemplo:
+
+106 4 0 6 1 3 15  
+634 4 105 5 1  
 
 ## Medição de Tempo
 O sistema mede e exibe:
