@@ -1,7 +1,7 @@
 # Documentação do Sistema de Recrutamento
 
 ## Visão Geral
-Este sistema implementa duas soluções para o problema de recrutamento de soldados: uma solução heurística (gulosa) e uma solução ótima usando programação dinâmica.
+Este sistema implementa duas soluções para o problema de recrutamento de soldados: uma solução heurística (gulosa) e uma solução ótima usando programação dinâmica. O programa permite ao usuário escolher qual método utilizar através de um menu interativo e mede o tempo de execução de cada solução.
 
 ## Estruturas de Dados
 
@@ -65,6 +65,31 @@ Função auxiliar que implementa a recursão da programação dinâmica.
 **Retorno:**
 - `EstadoDP*`: Melhor estado possível a partir do estado atual
 
+## Interface do Usuário
+
+O programa oferece uma interface simples através de linha de comando:
+
+1. **Execução:**
+   ```bash
+   ./tp2 -i <arquivo_entrada>
+   ```
+
+2. **Menu de Opções:**
+   - 0: Programação Dinâmica
+   - 1: Heurística
+
+3. **Saída:**
+   - Resultados são salvos em `saida.txt`
+   - Tempos de execução são exibidos no terminal
+
+## Medição de Tempo
+
+O sistema utiliza a função `getrusage()` para medir:
+- Tempo de usuário (CPU)
+- Tempo de sistema (I/O e outras operações)
+
+Os tempos são exibidos em segundos com precisão de 6 casas decimais.
+
 ## Limites do Problema
 - `MAX_W`: 1000000 (Limite máximo de peso que pode ser carregado)
 - `MAX_D`: 10000 (Limite máximo de distância que pode ser percorrida)
@@ -114,13 +139,13 @@ Foram utilizados três conjuntos de teste com diferentes características:
    - Peso máximo: 1000-5000 gramas
    - Conexões: 10-30 caminhos
 
-2. **Testes Médios (10 ≤ P < 20)**
+2. **Testes Médios (10 <= P < 20)**
    - Número de povos: 10-19
    - Distância máxima: 500-2000 metros
    - Peso máximo: 5000-20000 gramas
    - Conexões: 30-100 caminhos
 
-3. **Testes Grandes (P ≥ 20)**
+3. **Testes Grandes (P >= 20)**
    - Número de povos: 20-30
    - Distância máxima: 2000-5000 metros
    - Peso máximo: 20000-50000 gramas
@@ -160,10 +185,6 @@ Foram utilizados três conjuntos de teste com diferentes características:
    - A solução heurística encontra resultados próximos ao ótimo (90-95% do valor máximo)
    - A solução dinâmica sempre encontra o resultado ótimo
    - Em casos pequenos, a diferença entre as soluções é mínima
-
-### Gráficos Comparativos
-
-[Inserir gráficos comparativos de tempo e memória]
 
 ## Conclusão
 
