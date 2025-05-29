@@ -125,7 +125,8 @@ Os tempos são exibidos em segundos com precisão de 6 casas decimais.
 
 ## Documentação
 Para mais detalhes sobre a implementação e análise de resultados, consulte:
-- `docs/documentacao.md`: Documentação técnica detalhada
+- `docs/documentacao.md`: Documentação técnica detalhada em .md
+- `docs/documentacao.pdf`: Documentação técnica detalhada em .pdf
 - `docs/README.md`: Este arquivo
 
 ## Limpeza
