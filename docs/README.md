@@ -39,26 +39,59 @@ Após a execução, os resultados serão salvos em `saida.txt` e os tempos de ex
 ## Formato de Entrada
 O arquivo de entrada deve seguir o formato:
 ```
-P W D
-p1 h1
-p2 h2
+K
+P D W C
+p1 w1 h1
+p2 w2 h2
 ...
-pP hP
-C
-v1 u1 d1
-v2 u2 d2
+pP wP hP
+a1 b1 d1
+a2 b2 d2
 ...
-vC uC dC
+aC bC dC
+(repetir a estrutura acima para cada uma das K instâncias)
 ```
 Onde:
-- P: número de povos
-- W: peso máximo que pode ser carregado
-- D: distância máxima que pode ser percorrida
-- pi: peso de cada soldado do povo i
-- hi: habilidade de cada soldado do povo i
-- C: número de conexões entre povos
-- vi, ui: povos conectados
-- di: distância entre os povos
+- `K`: número de instâncias no arquivo.
+- `P`: número de povos.
+- `D`: distância máxima (em metros) que Zork pode andar.
+- `W`: peso da nave em gramas.
+- `C`: número de caminhos existentes entre os povos.
+- `pi`: identificador do povo `i` (inteiro de 1 até P).
+- `wi`: peso de cada soldado do povo `i` (em gramas).
+- `hi`: habilidade dos soldados do povo `i`, valor de 1 (pior) a 10 (melhor).
+- `ai`, `bi`: identificadores dos dois povos conectados pelo caminho `i`.
+- `di`: distância entre os povos `ai` e `bi` (em metros).
+
+### Exemplo:
+
+2
+6 10 310 7
+1 70 2
+2 100 3
+3 20 7
+4 90 4
+5 20 3
+6 10 1
+1 2 3
+1 5 2
+2 3 4
+2 4 2
+3 6 3
+4 5 3
+4 6 5
+5 6 317 6
+1 10 10
+2 30 9
+3 1 1
+4 3 6
+5 2 4
+1 2 3
+1 3 2
+1 4 2
+2 3 1
+3 5 3
+4 5 4
 
 ## Formato de Saída
 O arquivo de saída (`saida.txt`) conterá:
